@@ -1,7 +1,7 @@
 # 🚀 CosmiFi
 
 CosmiFi is a decentralized platform for creating, sharing, and evolving space mission designs together.
-It’s where engineers, designers, researchers, and dreamers collaborate to build humanity’s next steps beyond Earth.
+It's where engineers, designers, researchers, and dreamers collaborate to build humanity's next steps beyond Earth.
 
 
 ## Blueprint NFT
@@ -21,7 +21,7 @@ A new kind of space race — not of nations, but of minds.
 
 Blueprint NFT — a composable NFT that encapsulates a design, its metadata, and dependencies.
 
-Collaborative Design Exchange — share, remix, and build on others’ work while preserving attribution and value flow.
+Collaborative Design Exchange — share, remix, and build on others' work while preserving attribution and value flow.
 
 Decentralized Ownership — designs exist on-chain, enabling fractional ownership, trade, and transparent contribution tracking.
 
