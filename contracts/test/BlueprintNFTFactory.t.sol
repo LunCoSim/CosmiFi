@@ -3,12 +3,12 @@ pragma solidity 0.8.28;
 
 import "forge-std/Test.sol";
 import "../src/DesignerRegistry.sol";
-import "../src/EngineeringNFTFactory.sol";
-import "../src/EngineeringNFT.sol";
+import "../src/BlueprintNFTFactory.sol";
+import "../src/BlueprintNFT.sol";
 
-contract EngineeringNFTFactoryTest is Test {
+contract BlueprintNFTFactoryTest is Test {
     DesignerRegistry public registry;
-    EngineeringNFTFactory public factory;
+    BlueprintNFTFactory public factory;
 
     address public owner = address(this);
     address public designerA = address(0xA11CE);
@@ -31,7 +31,7 @@ contract EngineeringNFTFactoryTest is Test {
 
         // Deploy registry and factory
         registry = new DesignerRegistry();
-        factory = new EngineeringNFTFactory(address(registry));
+        factory = new BlueprintNFTFactory(address(registry));
 
         // Register designers
         vm.prank(designerA);
@@ -51,15 +51,15 @@ contract EngineeringNFTFactoryTest is Test {
     function testCreateCollectionByRegisteredDesignerEmitsEventAndTracksMapping() public {
         // Expect event emitted from factory
         vm.expectEmit(true, false, false, true, address(factory));
-        emit CollectionCreated(designerA, address(0), "EngineeringNFT A", "ENFTA", 1);
+        emit CollectionCreated(designerA, address(0), "BlueprintNFT A", "BNFTA", 1);
 
         vm.prank(designerA);
-        address collection = factory.createCollection("EngineeringNFT A", "ENFTA");
+        address collection = factory.createCollection("BlueprintNFT A", "BNFTA");
 
-        // Verify deployed contract is EngineeringNFT with correct params
-        EngineeringNFT coll = EngineeringNFT(collection);
-        assertEq(coll.name(), "EngineeringNFT A");
-        assertEq(coll.symbol(), "ENFTA");
+        // Verify deployed contract is BlueprintNFT with correct params
+        BlueprintNFT coll = BlueprintNFT(collection);
+        assertEq(coll.name(), "BlueprintNFT A");
+        assertEq(coll.symbol(), "BNFTA");
         assertEq(coll.designer(), designerA);
         assertEq(coll.nextTokenId(), 1);
         assertEq(coll.totalSupply(), 0);
@@ -117,20 +117,20 @@ contract EngineeringNFTFactoryTest is Test {
 
     function testInvalidNameReverts() public {
         vm.prank(designerA);
-        vm.expectRevert(EngineeringNFTFactory.InvalidName.selector);
-        factory.createCollection("", "ENFTA");
+        vm.expectRevert(BlueprintNFTFactory.InvalidName.selector);
+        factory.createCollection("", "BNFTA");
     }
 
     function testInvalidSymbolReverts() public {
         vm.prank(designerA);
-        vm.expectRevert(EngineeringNFTFactory.InvalidSymbol.selector);
-        factory.createCollection("EngineeringNFT A", "");
+        vm.expectRevert(BlueprintNFTFactory.InvalidSymbol.selector);
+        factory.createCollection("BlueprintNFT A", "");
     }
 
     function testCollectionsProduceMintableTokensUnderRegistryGating() public {
         vm.prank(designerA);
-        address collection = factory.createCollection("EngineeringNFT A", "ENFTA");
-        EngineeringNFT coll = EngineeringNFT(collection);
+        address collection = factory.createCollection("BlueprintNFT A", "BNFTA");
+        BlueprintNFT coll = BlueprintNFT(collection);
 
         // Designer can mint
         vm.prank(designerA);
@@ -138,7 +138,7 @@ contract EngineeringNFTFactoryTest is Test {
         assertEq(tokenId, 1);
         assertEq(coll.ownerOf(tokenId), designerA);
 
-        // Revoke designerA -> further mints still work because EngineeringNFT doesn't check registry
+        // Revoke designerA -> further mints still work because BlueprintNFT doesn't check registry
         registry.revokeDesigner(designerA);
 
         vm.prank(designerA);

@@ -26,14 +26,14 @@ A permissionless NFT platform where designers can create their own collections a
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
 │  ┌──────────────────┐         ┌──────────────────┐          │
-│  │ DesignerRegistry │◄────────┤ EngineeringNFT   │          │
+│  │ DesignerRegistry │◄────────┤ BlueprintNFT   │          │
 │  │  (Tracking)      │         │    Factory       │          │
 │  └──────────────────┘         └────────┬─────────┘          │
 │                                         │                     │
 │                                         │ deploys             │
 │                                         ↓                     │
 │                          ┌──────────────────────────┐        │
-│                          │   EngineeringNFT         │        │
+│                          │   BlueprintNFT         │        │
 │                          │   Collection #1          │        │
 │                          │   (Designer: Alice)      │        │
 │                          └──────────────────────────┘        │
@@ -41,7 +41,7 @@ A permissionless NFT platform where designers can create their own collections a
 │                                         │ deploys             │
 │                                         ↓                     │
 │                          ┌──────────────────────────┐        │
-│                          │   EngineeringNFT         │        │
+│                          │   BlueprintNFT         │        │
 │                          │   Collection #2          │        │
 │                          │   (Designer: Bob)        │        │
 │                          └──────────────────────────┘        │
@@ -87,14 +87,14 @@ function unregisterDesigner() external;                  // Self-unregister
 
 ---
 
-### 2. EngineeringNFTFactory.sol
+### 2. BlueprintNFTFactory.sol
 
 **Purpose**: Deploys per-designer NFT collections and manages designer-collection relationships.
 
 **Key Features**:
 - Auto-registers designers on first collection
 - Tracks all collections per designer
-- Deploys independent EngineeringNFT contracts
+- Deploys independent BlueprintNFT contracts
 - Provides collection discovery
 
 **State Variables**:
@@ -125,7 +125,7 @@ function isDesigner(address account)
 
 ---
 
-### 3. EngineeringNFT.sol
+### 3. BlueprintNFT.sol
 
 **Purpose**: Individual NFT collection contract for a single designer.
 
@@ -208,10 +208,10 @@ function approve(address to, uint256 tokenId) public;
 │    Factory     │
 └────┬───────────┘
      │
-     │ 6. new EngineeringNFT("My Art", "ART", user)
+     │ 6. new BlueprintNFT("My Art", "ART", user)
      ↓
 ┌────────────────┐
-│ EngineeringNFT │  Deploys at new address
+│ BlueprintNFT │  Deploys at new address
 │  Collection    │  designer = user (immutable)
 └────────────────┘
      │
@@ -238,7 +238,7 @@ function approve(address to, uint256 tokenId) public;
      │ 1. mintDesign("QmHash...")
      ↓
 ┌────────────────┐
-│ EngineeringNFT │
+│ BlueprintNFT │
 │   Collection   │
 └────┬───────────┘
      │
@@ -275,7 +275,7 @@ function approve(address to, uint256 tokenId) public;
      │    collection.totalSupply()
      ↓
 ┌────────────────┐
-│ EngineeringNFT │  Returns: "My Art", "ART", 5
+│ BlueprintNFT │  Returns: "My Art", "ART", 5
 │  Collection    │
 └────────────────┘
      │
@@ -285,7 +285,7 @@ function approve(address to, uint256 tokenId) public;
      │    collection.getDesignData(tokenId)
      ↓
 ┌────────────────┐
-│ EngineeringNFT │  Returns: 0xBuyer, "ipfs://QmHash...", ("QmHash", 0xDesigner)
+│ BlueprintNFT │  Returns: 0xBuyer, "ipfs://QmHash...", ("QmHash", 0xDesigner)
 │  Collection    │
 └────────────────┘
 ```
@@ -310,8 +310,8 @@ await registry.deployed();
 console.log("Registry deployed to:", registry.address);
 
 // 2. Deploy Factory
-const EngineeringNFTFactory = await ethers.getContractFactory("EngineeringNFTFactory");
-const factory = await EngineeringNFTFactory.deploy(registry.address);
+const BlueprintNFTFactory = await ethers.getContractFactory("BlueprintNFTFactory");
+const factory = await BlueprintNFTFactory.deploy(registry.address);
 await factory.deployed();
 console.log("Factory deployed to:", factory.address);
 
@@ -322,8 +322,8 @@ console.log("Factory deployed to:", factory.address);
 
 **CRITICAL**: Deploy in this order:
 1. ✅ DesignerRegistry first
-2. ✅ EngineeringNFTFactory second (requires registry address)
-3. ✅ EngineeringNFT collections (deployed by factory automatically)
+2. ✅ BlueprintNFTFactory second (requires registry address)
+3. ✅ BlueprintNFT collections (deployed by factory automatically)
 
 ### Network Deployment
 
@@ -363,7 +363,7 @@ module.exports = {
    - Factory: Checks registry.isDesigner(user) → false
    - Factory: Calls registry.registerDesignerFor(user)
    - Registry: Sets _isDesigner[user] = true ✅
-   - Factory: Deploys new EngineeringNFT(name, symbol, user)
+   - Factory: Deploys new BlueprintNFT(name, symbol, user)
    - Factory: Tracks collection in mappings
    - Frontend: Show success + collection address
 
@@ -492,7 +492,7 @@ event CollectionCreated(
 
 ---
 
-### Collection Contract (EngineeringNFT)
+### Collection Contract (BlueprintNFT)
 
 #### Read Functions
 
@@ -634,7 +634,7 @@ Current contracts are **not upgradeable**. To upgrade:
 ### Unit Tests
 
 ```javascript
-describe("EngineeringNFTFactory", function() {
+describe("BlueprintNFTFactory", function() {
     it("Should auto-register designer on first collection", async function() {
         const [designer] = await ethers.getSigners();
         
@@ -656,7 +656,7 @@ describe("EngineeringNFTFactory", function() {
         const event = receipt.events.find(e => e.event === 'CollectionCreated');
         const collectionAddress = event.args.collection;
         
-        const collection = await ethers.getContractAt("EngineeringNFT", collectionAddress);
+        const collection = await ethers.getContractAt("BlueprintNFT", collectionAddress);
         expect(await collection.designer()).to.equal(designer.address);
     });
 });
@@ -675,7 +675,7 @@ describe("End-to-End Flow", function() {
         const collectionAddress = receipt.events[0].args.collection;
         
         // 2. Mint NFT
-        const collection = await ethers.getContractAt("EngineeringNFT", collectionAddress);
+        const collection = await ethers.getContractAt("BlueprintNFT", collectionAddress);
         await collection.connect(designer).mintDesign(buyer.address, "QmHash...");
         
         // 3. Verify
@@ -693,7 +693,7 @@ describe("End-to-End Flow", function() {
 
 **Issue**: "designer not registered" error when minting
 - **Cause**: Old contract version with registry check in mint
-- **Solution**: Redeploy using updated EngineeringNFT contract
+- **Solution**: Redeploy using updated BlueprintNFT contract
 
 **Issue**: Cannot create collection
 - **Cause**: Registry not properly set in factory

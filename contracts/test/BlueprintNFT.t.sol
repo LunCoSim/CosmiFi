@@ -2,14 +2,14 @@
 pragma solidity 0.8.28;
 
 import "forge-std/Test.sol";
-import "../src/EngineeringNFT.sol";
+import "../src/BlueprintNFT.sol";
 import "../src/DesignerRegistry.sol";
 
-contract EngineeringNFTCollectionTest is Test {
+contract BlueprintNFTCollectionTest is Test {
     // Contracts
     DesignerRegistry public registry;
-    EngineeringNFT public collectionA;
-    EngineeringNFT public collectionB;
+    BlueprintNFT public collectionA;
+    BlueprintNFT public collectionB;
 
     // Actors
     address public designerA = address(0xA11CE);
@@ -42,19 +42,19 @@ contract EngineeringNFTCollectionTest is Test {
         registry.registerDesigner();
 
         // Deploy two per-designer collections
-        collectionA = new EngineeringNFT("EngineeringNFT A", "ENFTA", designerA);
-        collectionB = new EngineeringNFT("EngineeringNFT B", "ENFTB", designerB);
+        collectionA = new BlueprintNFT("BlueprintNFT A", "BNFTA", designerA);
+        collectionB = new BlueprintNFT("BlueprintNFT B", "BNFTB", designerB);
     }
 
     function testInitialState() public {
-        assertEq(collectionA.name(), "EngineeringNFT A");
-        assertEq(collectionA.symbol(), "ENFTA");
+        assertEq(collectionA.name(), "BlueprintNFT A");
+        assertEq(collectionA.symbol(), "BNFTA");
         assertEq(collectionA.nextTokenId(), 1);
         assertEq(collectionA.totalSupply(), 0);
         assertEq(collectionA.designer(), designerA);
 
-        assertEq(collectionB.name(), "EngineeringNFT B");
-        assertEq(collectionB.symbol(), "ENFTB");
+        assertEq(collectionB.name(), "BlueprintNFT B");
+        assertEq(collectionB.symbol(), "BNFTB");
         assertEq(collectionB.nextTokenId(), 1);
         assertEq(collectionB.totalSupply(), 0);
         assertEq(collectionB.designer(), designerB);
@@ -79,12 +79,12 @@ contract EngineeringNFTCollectionTest is Test {
 
     function testMintDesignByNonDesignerReverts() public {
         vm.prank(attacker);
-        vm.expectRevert(bytes("EngineeringNFT: caller is not designer"));
+        vm.expectRevert(bytes("BlueprintNFT: caller is not designer"));
         collectionA.mintDesign(METADATA_CID_A1);
     }
 
     function testMintBlocksWhenDesignerRevoked() public {
-        // This test is not applicable since EngineeringNFT doesn't check registry status
+        // This test is not applicable since BlueprintNFT doesn't check registry status
         // The designer can always mint from their own collection
         vm.prank(designerA);
         uint256 tokenId = collectionA.mintDesign(METADATA_CID_A1);
@@ -135,12 +135,12 @@ contract EngineeringNFTCollectionTest is Test {
     }
 
     function testTokenURIForNonExistentToken() public {
-        vm.expectRevert(bytes("EngineeringNFT: URI query for nonexistent token"));
+        vm.expectRevert(bytes("BlueprintNFT: URI query for nonexistent token"));
         collectionA.tokenURI(999);
     }
 
     function testGetDesignDataForNonExistentToken() public {
-        vm.expectRevert(bytes("EngineeringNFT: query for nonexistent token"));
+        vm.expectRevert(bytes("BlueprintNFT: query for nonexistent token"));
         collectionA.getDesignData(999);
     }
 
@@ -193,12 +193,12 @@ contract EngineeringNFTCollectionTest is Test {
 
     function testEmptyMetadataCidReverts() public {
         vm.prank(designerA);
-        vm.expectRevert(bytes("EngineeringNFT: empty metadataCid"));
+        vm.expectRevert(bytes("BlueprintNFT: empty metadataCid"));
         collectionA.mintDesign("");
     }
 
     function testConstructorWithZeroDesignerReverts() public {
-        vm.expectRevert(bytes("EngineeringNFT: designer is zero address"));
-        new EngineeringNFT("Test Collection", "TEST", address(0));
+        vm.expectRevert(bytes("BlueprintNFT: designer is zero address"));
+        new BlueprintNFT("Test Collection", "TEST", address(0));
     }
 }

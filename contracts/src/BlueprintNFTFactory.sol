@@ -2,9 +2,9 @@
 pragma solidity 0.8.28;
 
 import "./DesignerRegistry.sol";
-import "./EngineeringNFT.sol";
+import "./BlueprintNFT.sol";
 
-contract EngineeringNFTFactory {
+contract BlueprintNFTFactory {
     DesignerRegistry public immutable registry;
     mapping(address => address[]) private _collectionsByDesigner;
     mapping(address => address) public designerOfCollection;
@@ -38,7 +38,7 @@ contract EngineeringNFTFactory {
             revert("Designer not registered");
         }
 
-        EngineeringNFT newCollection = new EngineeringNFT(
+        BlueprintNFT newCollection = new BlueprintNFT(
             name,
             symbol,
             msg.sender

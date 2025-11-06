@@ -2,18 +2,18 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
-import {EngineeringNFT} from "../src/EngineeringNFT.sol";
+import {BlueprintNFT} from "../src/BlueprintNFT.sol";
 
-contract DeployEngineeringNFT is Script {
-    EngineeringNFT public engineeringNFT;
+contract DeployBlueprintNFT is Script {
+    BlueprintNFT public blueprintNFT;
 
     function run(string memory _name, string memory _symbol, address _designer) public {
         vm.startBroadcast();
-        engineeringNFT = new EngineeringNFT(_name, _symbol, _designer);
+        blueprintNFT = new BlueprintNFT(_name, _symbol, _designer);
         vm.stopBroadcast();
     }
     
     function runDefault() public {
-        run("EngineeringNFT", "ENFT", msg.sender);
+        run("BlueprintNFT", "BNFT", msg.sender);
     }
 }

@@ -4,7 +4,7 @@ pragma solidity 0.8.28;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "./DesignerRegistry.sol";
 
-contract EngineeringNFT is ERC721 {
+contract BlueprintNFT is ERC721 {
     struct DesignData {
         string metadataCid;
         uint256 mintedAt;
@@ -22,7 +22,7 @@ contract EngineeringNFT is ERC721 {
     );
 
     modifier onlyDesigner() {
-        require(msg.sender == designer, "EngineeringNFT: caller is not designer");
+        require(msg.sender == designer, "BlueprintNFT: caller is not designer");
         _;
     }
 
@@ -31,13 +31,13 @@ contract EngineeringNFT is ERC721 {
         string memory _symbol,
         address _designer
     ) ERC721(_name, _symbol) {
-        require(_designer != address(0), "EngineeringNFT: designer is zero address");
+        require(_designer != address(0), "BlueprintNFT: designer is zero address");
         designer = _designer;
         nextTokenId = 1;
     }
 
     function mintDesign(string memory metadataCid) public onlyDesigner returns (uint256) {
-        require(bytes(metadataCid).length != 0, "EngineeringNFT: empty metadataCid");
+        require(bytes(metadataCid).length != 0, "BlueprintNFT: empty metadataCid");
 
         uint256 tokenId = nextTokenId;
         nextTokenId++;
@@ -55,7 +55,7 @@ contract EngineeringNFT is ERC721 {
     }
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_ownerOf(tokenId) != address(0), "EngineeringNFT: URI query for nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "BlueprintNFT: URI query for nonexistent token");
         DesignData memory design = designs[tokenId];
         return string(abi.encodePacked("ipfs://", design.metadataCid));
     }
@@ -69,7 +69,7 @@ contract EngineeringNFT is ERC721 {
     }
 
     function getDesignData(uint256 tokenId) public view returns (string memory metadataCid, address creator, uint256 mintedAt) {
-        require(_ownerOf(tokenId) != address(0), "EngineeringNFT: query for nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "BlueprintNFT: query for nonexistent token");
         DesignData memory design = designs[tokenId];
         return (design.metadataCid, designer, design.mintedAt);
     }
