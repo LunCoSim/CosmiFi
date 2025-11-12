@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["supabase/functions/"]
+    }
+  },
+  "tasks": {
+    "serve": "supabase functions serve --import-map import_map.json",
+    "dev": "deno run --allow-net --allow-env --allow-read --env-file=.env --import-map=./import_map.json supabase/functions/auth/verify-wallet/index.ts",
+    "test": "deno test --allow-net --allow-env --import-map=./import_map.json",
+    "check": "deno check --import-map=./import_map.json supabase/functions/**/*.ts"
+  }
+}
