@@ -1,0 +1,37 @@
+{
+  "name": "cosmifi-backend",
+  "version": "1.0.0",
+  "description": "Backend for CosmiFi engineering NFT platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "supabase start",
+    "deploy": "supabase functions deploy",
+    "deploy:all": "supabase functions deploy",
+    "deploy:auth": "supabase functions deploy auth/verify-wallet",
+    "deploy:profiles": "supabase functions deploy profiles/create-profile profiles/get-profile profiles/update-profile",
+    "deploy:designs": "supabase functions deploy designs/upload-files designs/create-draft designs/generate-metadata designs/prepare-mint designs/get-designs",
+    "deploy:webhooks": "supabase functions deploy webhook/nft-minted",
+    "test": "deno test --allow-net",
+    "test:watch": "deno test --allow-net --watch",
+    "lint": "deno lint",
+    "check": "deno check"
+  },
+  "keywords": [
+    "supabase",
+    "edge-functions",
+    "ipfs",
+    "blockchain",
+    "nft",
+    "engineering"
+  ],
+  "author": "CosmiFi Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "supabase": "^2.58.5"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.81.1",
+    "ethers": "^6.0.0"
+  }
+}

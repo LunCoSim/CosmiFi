@@ -1,0 +1,11 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.208.0/",
+    "viem": "https://esm.sh/viem@2.21.18",
+    "viem/": "https://esm.sh/viem@2.21.18/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.0",
+    "@supabase/functions-js": "https://esm.sh/@supabase/functions-js@2.1.5",
+    "wagmi": "https://esm.sh/wagmi@2.1.0",
+    "@wagmi/core": "https://esm.sh/@wagmi/core@2.1.0"
+  }
+}

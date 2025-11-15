@@ -576,6 +576,18 @@ event DesignerRevoked(address indexed designer);
 
 ### Access Control
 
+forge create src/BlueprintNFTFactory.sol:BlueprintNFTFactory \
+  --rpc-url https://base-sepolia.drpc.org \
+  --private-key fff797502a418e1bc326a36216213afd91acdd3f52c2a00f4b52f4c603c187e4 --broadcast\
+  --etherscan-api-key YTN7S5J3ST4U5TVE4BGCSW1SKFIW394P2I \
+  --constructor-args 0x6C4aab39dd9063A7E79FD26caE373bae9efdccb8 --verify
+
+  forge create src/DesignerRegistry.sol:DesignerRegistry \
+  --rpc-url https://base-sepolia.drpc.org \
+  --private-key fff797502a418e1bc326a36216213afd91acdd3f52c2a00f4b52f4c603c187e4 \
+  --etherscan-api-key YTN7S5J3ST4U5TVE4BGCSW1SKFIW394P2I \
+  --verify
+
 **✅ Secure:**
 - Only designers can mint in their collections (immutable `designer` address)
 - Only owners can transfer their NFTs (standard ERC721)

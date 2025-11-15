@@ -24,7 +24,7 @@ contract BlueprintNFTCollectionTest is Test {
     string constant METADATA_CID_B1 = "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdk";
 
     // Redeclare event for expectEmit matching
-    event DesignMinted(uint256 indexed tokenId, address indexed owner, string metadataCid);
+    event DesignMinted(uint256 indexed tokenId, address indexed owner, string metadataCid, uint256 mintedAt);
 
     function setUp() public {
         // Fund actors
@@ -69,9 +69,10 @@ contract BlueprintNFTCollectionTest is Test {
         assertEq(collectionA.totalSupply(), 1);
         assertEq(collectionA.ownerOf(tokenId), designerA);
 
-        (string memory cid, address creator) = collectionA.getDesignData(tokenId);
+        (string memory cid, address creator, uint256 mintedAt) = collectionA.getDesignData(tokenId);
         assertEq(cid, METADATA_CID_A1);
         assertEq(creator, designerA);
+        assertGt(mintedAt, 0);
 
         string memory expectedTokenURI = string(abi.encodePacked("ipfs://", METADATA_CID_A1));
         assertEq(collectionA.tokenURI(tokenId), expectedTokenURI);
@@ -127,8 +128,10 @@ contract BlueprintNFTCollectionTest is Test {
     }
 
     function testMintDesignEmitsEvent() public {
+        uint256 ts = 1_700_000_000;
+        vm.warp(ts);
         vm.expectEmit(true, true, true, true, address(collectionA));
-        emit DesignMinted(1, designerA, METADATA_CID_A1);
+        emit DesignMinted(1, designerA, METADATA_CID_A1, ts);
 
         vm.prank(designerA);
         collectionA.mintDesign(METADATA_CID_A1);
