@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { Navigation } from '../src/components/Navigation';
+import { Footer } from '../src/components/ui/Footer';
+import { ErrorBoundary } from '../src/components/ErrorBoundary';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -21,8 +23,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <Navigation />
-          <main>{children}</main>
+          <ErrorBoundary>
+            <Navigation />
+            <main >{children}</main>
+            <Footer />
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>

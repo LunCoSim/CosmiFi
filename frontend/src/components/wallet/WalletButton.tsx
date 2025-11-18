@@ -49,53 +49,29 @@ export function WalletButton() {
                 );
               }
 
-              if (chain.unsupported) {
+              if (chain.unsupported || chain.id !== 84532) {
                 return (
                   <button
                     onClick={openChainModal}
                     type="button"
                     className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                   >
-                    Wrong network
+                    Switch to Base Sepolia
                   </button>
                 );
               }
 
               return (
-                <div className="text-blue-500" style={{ display: 'flex', gap: 12 }}>
-                  <button
-                    onClick={openChainModal}
-                    style={{ display: 'flex', alignItems: 'center' }}
-                    type="button"
-                    className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 font-medium py-2 px-4 rounded-lg transition-colors"
-                  >
-                    {chain.hasIcon && (
-                      <div className="text-blue-500"
-                        style={{
-                          background: chain.iconBackground,
-                          width: 12,
-                          height: 12,
-                          borderRadius: 999,
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {chain.iconUrl && (
-                          <img
-                          
-                            alt={chain.name ?? 'Chain icon'}
-                            src={chain.iconUrl}
-                            style={{ width: 12, height: 12 }}
-                          />
-                        )}
-                      </div>
-                    )}
-                    {chain.name}
-                  </button>
-
+                <div className="flex items-center gap-3">
+                  {/* <div className="flex items-center gap-2 bg-green-100 text-green-800 font-medium py-2 px-3 rounded-lg">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    Base Sepolia
+                  </div> */}
+                  
                   <button
                     onClick={openAccountModal}
                     type="button"
-                    className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                    className="flex items-center gap-2 bg-primary-600 text-xs md:text-sm hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                   >
                     {account.displayName}
                     {account.displayBalance

@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAccount, useBalance } from 'wagmi';
 import { formatEther } from 'viem';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { WalletButton } from './wallet/WalletButton';
 import { useDesigner } from '../hooks/useDesigner';
+import { useWalletContext } from '../contexts/WalletContext';
 import { Button } from './ui/Button';
 import { Modal } from './ui/Modal';
 import { TransactionStatus } from './TransactionStatus';
@@ -15,14 +16,15 @@ export function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({ address });
-  const { 
-    isDesigner, 
-    isCheckingDesigner, 
-    isRegistering, 
-    register, 
-    isRegisteringModalOpen, 
+  const { isReconnecting, reconnect } = useWalletContext();
+  const {
+    isDesigner,
+    isCheckingDesigner,
+    isRegistering,
+    register,
+    isRegisteringModalOpen,
     setIsRegisteringModalOpen,
-    isConfirmed 
+    isConfirmed
   } = useDesigner();
 
   const handleRegisterDesigner = () => {
@@ -39,10 +41,20 @@ export function Navigation() {
     console.log('Is connected:', isConnected);
     console.log('Is designer:', isDesigner);
     console.log('Is checking designer:', isCheckingDesigner);
-  }, [isConnected, isDesigner, isCheckingDesigner]);
+    console.log('Is reconnecting:', isReconnecting);
+  }, [isConnected, isDesigner, isCheckingDesigner, isReconnecting]);
+
+  // Add logging to track wallet state during navigation
+  useEffect(() => {
+    console.log('Navigation: Wallet state changed');
+    console.log('- isConnected:', isConnected);
+    console.log('- address:', address);
+    console.log('- isDesigner:', isDesigner);
+    console.log('- isReconnecting:', isReconnecting);
+  }, [isConnected, address, isDesigner, isReconnecting]);
 return (
   <>
-    <nav className="bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
+    <nav className="bg-white shadow-lg sticky top-0 z-50 transition-all mb-10 px-10 duration-300">
       <div className="container-responsive">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -72,14 +84,14 @@ return (
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Wallet Balance - Hidden on mobile, shown in slide menu */}
+            {/* Wallet Balance - Hidden on mobile, shown in slide menu
             <div className="hidden md:block">
               {isConnected && balance && (
                 <span className="text-sm sm:text-base text-gray-700 transition-colors duration-200">
                   {parseFloat(formatEther(balance.value)).toFixed(4)} {balance.symbol}
                 </span>
               )}
-            </div>
+            </div> */}
 
             {/* Wallet Connection */}
             <WalletButton />
@@ -213,6 +225,30 @@ return (
                   Register Now
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reconnection Banner */}
+      {isReconnecting && (
+        <div className="bg-yellow-50 border-b border-yellow-200">
+          <div className="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <ExclamationTriangleIcon className="h-5 w-5 text-yellow-600 mr-2" />
+                <p className="text-yellow-800 text-sm">
+                  Reconnecting to your wallet...
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={reconnect}
+                disabled={isReconnecting}
+              >
+                {isReconnecting ? 'Reconnecting...' : 'Reconnect Now'}
+              </Button>
             </div>
           </div>
         </div>

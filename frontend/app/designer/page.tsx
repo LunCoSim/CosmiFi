@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAccount } from 'wagmi';
+import { useRouter } from 'next/navigation';
 import { useDesigner } from '../../src/hooks/useDesigner';
 import { useCollection } from '../../src/hooks/useCollection';
 import { useProfile } from '../../src/hooks/useProfile';
@@ -17,9 +18,11 @@ import { CreateCollectionModal } from '../../src/components/designer/CreateColle
 import { EditProfileModal } from '../../src/components/designer/EditProfileModal';
 import { Modal } from '../../src/components/ui/Modal';
 import { Collection } from '../../src/types/collection';
+import { PageLoading } from '../../src/components/ui/Loading';
 
 export default function DesignerDashboard() {
   const { address, isConnected } = useAccount();
+  const router = useRouter();
   const { isDesigner, isCheckingDesigner } = useDesigner();
   const { collections, isLoadingCollections } = useCollection();
   const { profile, isLoading: isLoadingProfile, error: profileError } = useProfile();
@@ -27,22 +30,18 @@ export default function DesignerDashboard() {
   const { isRegisterModalOpen, isEditProfileModalOpen } = useSelector((state: RootState) => state.ui);
 
   useEffect(() => {
-    console.log('Designer page loaded');
-    console.log('Wallet connected:', isConnected);
-    console.log('Wallet address:', address);
-    console.log('Is designer:', isDesigner);
-    console.log('Type of isDesigner:', typeof isDesigner);
+   
     
-    // Redirect to home if not connected
+    // Redirect to home if not connected using Next.js router
     if (!isConnected) {
       console.log('Redirecting to home - wallet not connected');
-      window.location.href = '/';
+      router.push('/');
     }
-  }, [isConnected, address, isDesigner]);
+  }, [isConnected, address, isDesigner, router, collections]);
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center  bg-gray-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Connect Your Wallet</h1>
           <p className="text-gray-600 mb-6">Please connect your wallet to access the designer dashboard</p>
@@ -53,19 +52,12 @@ export default function DesignerDashboard() {
   }
 
   if (isCheckingDesigner) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking designer status...</p>
-        </div>
-      </div>
-    );
+    return <PageLoading text="Checking designer status..." />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gray-50  px-10">
+      <header className="bg-white shadow-sm border-b px-6">
         <div className="container-responsive">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 transition-colors duration-200">Designer Dashboard</h1>
@@ -74,15 +66,17 @@ export default function DesignerDashboard() {
         </div>
       </header>
 
-      <main className="container-responsive py-6 sm:py-8">
+      <main className="container-responsive py-6 sm:py-8 ">
     
         {!!isDesigner && (
-          <ProfileCard
-            profile={profile}
-            isLoading={isLoadingProfile}
-            error={profileError}
-            isDesigner={!!isDesigner}
-          />
+          <div>
+            <ProfileCard
+              profile={profile}
+              isLoading={isLoadingProfile}
+              error={profileError}
+              isDesigner={!!isDesigner}
+            />
+          </div>
         )}
 
         {!isDesigner ? (
@@ -96,7 +90,7 @@ export default function DesignerDashboard() {
             </Button>
           </div>
         ) : (
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-6 sm:space-y-8 mx-9">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <div>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-4 transition-colors duration-200">Your Collections</h2>
@@ -113,12 +107,12 @@ export default function DesignerDashboard() {
               collections={collections as Collection[]}
               currentDesignerAddress={address}
               onViewCollection={(collection: Collection) => {
-                // Navigate to collection detail page
-                window.location.href = `/collection/${collection.address}`;
+                // Navigate to collection detail page using Next.js router
+                router.push(`/collection/${collection.address}`);
               }}
               onMintNFT={(collection: Collection) => {
-                // Navigate to mint page
-                window.location.href = `/collection/${collection.address}/mint`;
+                // Navigate to mint page using Next.js router
+                router.push(`/collection/${collection.address}/mint`);
               }}
               isLoading={isLoadingCollections}
             />

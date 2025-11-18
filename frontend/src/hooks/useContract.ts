@@ -9,6 +9,8 @@ export function useIsDesigner(address?: Address) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
+      staleTime: 10 * 60 * 1000, // 10 minutes cache
+      refetchOnWindowFocus: false, // Don't refetch on window focus
     },
   });
 }
@@ -44,12 +46,20 @@ export function useCreateCollection() {
     hash,
   });
 
-  const createCollection = (name: string, symbol: string) => {
-    writeContract({
-      ...CONTRACTS.BLUEPRINT_FACTORY,
-      functionName: 'createCollection',
-      args: [name, symbol],
-    });
+  const createCollection = async (name: string, symbol: string) => {
+    console.log('useCreateCollection: Creating collection', { name, symbol });
+    try {
+      await writeContract({
+        ...CONTRACTS.BLUEPRINT_FACTORY,
+        functionName: 'createCollection',
+        args: [name, symbol],
+      });
+      console.log('useCreateCollection: Transaction submitted');
+      return hash;
+    } catch (error) {
+      console.error('useCreateCollection: Failed to create collection', error);
+      throw error;
+    }
   };
 
   return {
@@ -69,6 +79,8 @@ export function useGetCollections(designer?: Address) {
     args: designer ? [designer] : undefined,
     query: {
       enabled: !!designer,
+      staleTime: 5 * 60 * 1000, // 5 minutes cache
+      refetchOnWindowFocus: false,
     },
   });
 }
@@ -80,6 +92,8 @@ export function useGetCollectionCount(designer?: Address) {
     args: designer ? [designer] : undefined,
     query: {
       enabled: !!designer,
+      staleTime: 5 * 60 * 1000, // 5 minutes cache
+      refetchOnWindowFocus: false,
     },
   });
 }
@@ -91,6 +105,8 @@ export function useGetDesigner(collection?: Address) {
     args: collection ? [collection] : undefined,
     query: {
       enabled: !!collection,
+      staleTime: 10 * 60 * 1000, // 10 minutes cache
+      refetchOnWindowFocus: false,
     },
   });
 }
