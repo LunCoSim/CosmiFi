@@ -10,5 +10,5 @@ export const config = getDefaultConfig({
     transports: {
         [baseSepolia.id]: http("https://base-sepolia-rpc.publicnode.com")
     },
-    ssr: true
+    ssr: false // Disable SSR to prevent indexedDB errors during build
 });
