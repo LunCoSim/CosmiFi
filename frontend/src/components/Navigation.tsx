@@ -54,7 +54,7 @@ export function Navigation() {
   }, [isConnected, address, isDesigner, isReconnecting]);
 return (
   <>
-    <nav className="bg-white shadow-lg sticky top-0 z-50 transition-all mb-10 px-10 duration-300">
+    <nav className="bg-white shadow-lg sticky top-0 z-50 transition-all px-10 duration-300">
       <div className="container-responsive">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
