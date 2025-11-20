@@ -12,7 +12,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-2xl font-bold text-primary-400 mb-4">CosmiFi</h3>
             <p className="text-gray-300 mb-4 max-w-md">
-              Decentralized platform for engineering design NFTs. Mint, trade, and collaborate on cutting-edge CAD designs and engineering components.
+              Decentralized platform for space engineering NFTs. Create, share, and evolve space mission designs as verifiable NFTs that can be sent to the moon and beyond.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -45,6 +45,11 @@ export function Footer() {
               <li>
                 <Link href="/designer" className="text-gray-300 hover:text-white transition-colors">
                   Designer Portal
+                </Link>
+              </li>
+              <li>
+                <Link href="/#about" className="text-gray-300 hover:text-white transition-colors">
+                  About
                 </Link>
               </li>
               <li>

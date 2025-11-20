@@ -54,8 +54,8 @@ export function Navigation() {
   }, [isConnected, address, isDesigner, isReconnecting]);
 return (
   <>
-    <nav className="bg-white shadow-lg sticky top-0 z-50 transition-all px-10 duration-300">
-      <div className="container-responsive">
+    <nav className="bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             {/* Logo */}
@@ -84,70 +84,103 @@ return (
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* Wallet Balance - Hidden on mobile, shown in slide menu
+            {/* Desktop Wallet Balance */}
             <div className="hidden md:block">
               {isConnected && balance && (
                 <span className="text-sm sm:text-base text-gray-700 transition-colors duration-200">
                   {parseFloat(formatEther(balance.value)).toFixed(4)} {balance.symbol}
                 </span>
               )}
-            </div> */}
+            </div>
 
-            {/* Wallet Connection */}
-            <WalletButton />
-            
+            {/* Desktop Wallet Connection */}
+            <div className="hidden md:block">
+              <WalletButton />
+            </div>
 
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button
                 type="button"
-                className="bg-gray-100 p-2 sm:p-3 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-all duration-200 hover:scale-105 active:scale-95"
+                className="bg-gray-100 p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-all duration-200 hover:scale-105 active:scale-95"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? (
-                  <XMarkIcon className="block h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-200" aria-hidden="true" />
+                  <XMarkIcon className="block h-6 w-6 transition-transform duration-200" aria-hidden="true" />
                 ) : (
-                  <Bars3Icon className="block h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-200" aria-hidden="true" />
+                  <Bars3Icon className="block h-6 w-6 transition-transform duration-200" aria-hidden="true" />
                 )}
               </button>
             </div>
           </div>
         </div>
       </div>
+    </nav>
 
-      {/* Mobile menu */}
-      <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} transition-all duration-300 ease-in-out`}>
-        <div className="px-2 sm:px-4 pt-2 sm:pt-4 pb-3 sm:pb-6 space-y-1 sm:space-y-2">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`block px-3 py-2 sm:px-4 sm:py-3 rounded-md text-base sm:text-lg font-medium transition-all duration-200 hover:scale-105 ${
-                item.disabled
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
-              }`}
-              onClick={(e) => {
-                if (item.disabled) {
-                  e.preventDefault();
-                } else {
-                  setIsMobileMenuOpen(false);
-                }
-              }}
-            >
-              {item.name}
+    {/* Mobile Sidebar */}
+    <div className={`fixed inset-0 z-40 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"
+        onClick={() => setIsMobileMenuOpen(false)}
+      ></div>
+      
+      {/* Sidebar Panel */}
+      <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-xl transform transition-transform">
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <h1 className="text-xl font-bold text-primary-600">CosmiFi</h1>
             </Link>
-          ))}
+            <button
+              type="button"
+              className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
           
-          {/* Mobile wallet balance - Now shown in slide menu */}
-          {isConnected && balance && (
-            <div className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-gray-700 transition-colors duration-200">
-              Balance: {parseFloat(formatEther(balance.value)).toFixed(4)} {balance.symbol}
-            </div>
-          )}
+          {/* Sidebar Content */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`block px-4 py-3 rounded-md text-base font-medium transition-all duration-200 ${
+                  item.disabled
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
+                }`}
+                onClick={(e) => {
+                  if (item.disabled) {
+                    e.preventDefault();
+                  } else {
+                    setIsMobileMenuOpen(false);
+                  }
+                }}
+              >
+                {item.name}
+              </Link>
+            ))}
+            
+            {/* Mobile wallet balance */}
+            {isConnected && balance && (
+              <div className="px-4 py-3 text-sm text-gray-700 border-t mt-4 pt-4">
+                <div className="font-medium mb-1">Wallet Balance</div>
+                <div>{parseFloat(formatEther(balance.value)).toFixed(4)} {balance.symbol}</div>
+              </div>
+            )}
+          </div>
+          
+          {/* Sidebar Footer with Wallet Button */}
+          <div className="p-4 border-t">
+            <WalletButton />
+          </div>
         </div>
       </div>
-    </nav>
+    </div>
       {/* Designer Registration Modal */}
       <Modal
         isOpen={isRegisteringModalOpen}
