@@ -34,7 +34,7 @@ export function useContractEvents(address?: Address, listeners: EventListeners =
         });
       }
     },
-    pollingInterval: 4_000, // Check every 4 seconds instead of constant polling
+    pollingInterval: 30_000, // Check every 30 seconds to reduce wallet prompts
   });
 
   // Listen for NFT minted events
@@ -75,7 +75,7 @@ export function useContractEvents(address?: Address, listeners: EventListeners =
         });
       }
     },
-    pollingInterval: 4_000,
+    pollingInterval: 30_000, // Check every 30 seconds to reduce wallet prompts
   });
 }
 

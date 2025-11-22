@@ -96,7 +96,9 @@ export default function CollectionsPage() {
   useEffect(() => {
     console.log('Collections page loaded');
     console.log('Wallet connected:', isConnected);
-  }, [isConnected]);
+    console.log('Collections data:', collections);
+    console.log('Navigation links will use collection.id:', collections.map(c => ({ id: c.id, name: c.name, address: c.designerAddress })));
+  }, [isConnected, collections]);
 
   const categories = ['all', ...Array.from(new Set(collections.map(c => c.category)))];
 

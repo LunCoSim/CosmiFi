@@ -9,8 +9,8 @@ export function useIsDesigner(address?: Address) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      staleTime: 10 * 60 * 1000, // 10 minutes cache
-      refetchOnWindowFocus: false, // Don't refetch on window focus
+      staleTime: 2 * 60 * 1000, // 2 minutes cache (reduced for more responsive updates)
+      refetchOnWindowFocus: true, // Refetch on window focus to catch updates
     },
   });
 }

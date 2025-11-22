@@ -39,8 +39,11 @@ serve(async (req: Request) => {
 
     const { data: profile, error } = await supabase
       .from('profiles')
-      .update(updateData)
-      .eq('wallet_address', walletAddress)
+      .upsert({ 
+        wallet_address: walletAddress,
+        ...updateData,
+        updated_at: new Date().toISOString()
+      })
       .select()
       .single()
 

@@ -15,17 +15,26 @@ export function useProfile() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchProfile = useCallback(async (walletAddress: string) => {
+    console.log('🔍 [DEBUG] fetchProfile called for walletAddress:', walletAddress);
+    console.log('🔍 [DEBUG] Profile cache size:', profileCache.size);
+    console.log('🔍 [DEBUG] Cache has walletAddress:', profileCache.has(walletAddress));
+    
     // Check cache first
     if (profileCache.has(walletAddress)) {
+      console.log('🔍 [DEBUG] Using cached profile for:', walletAddress);
       setProfile(profileCache.get(walletAddress)!);
       return;
     }
 
+    console.log('🔍 [DEBUG] Fetching profile from API for:', walletAddress);
     setIsLoading(true);
     setError(null);
 
     try {
-      const fetchedProfile = await profileService.getProfile(walletAddress);
+      console.log('🔍 [DEBUG] Getting auth headers...');
+      const authHeaders = await getAuthHeaders();
+      console.log('🔍 [DEBUG] Auth headers received, calling profileService.getProfile...');
+      const fetchedProfile = await profileService.getProfile(walletAddress, authHeaders);
       
       if (fetchedProfile) {
         // Cache the profile
@@ -43,7 +52,12 @@ export function useProfile() {
       }
     } catch (err) {
       console.error('Failed to fetch profile:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch profile');
+      
+      // Don't show error to user if backend is unavailable - just use default profile
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch profile';
+      if (!errorMessage.includes('backend may not be deployed') && !errorMessage.includes('endpoint not found')) {
+        setError(errorMessage);
+      }
       
       // Fallback to default profile on error
       const defaultProfile: Profile = {
@@ -58,13 +72,7 @@ export function useProfile() {
     }
   }, []);
 
-  useEffect(() => {
-    if (address) {
-      fetchProfile(address);
-    } else {
-      setProfile(null);
-    }
-  }, [address, fetchProfile]);
+  // Removed first useEffect - consolidated with the one below to prevent duplicate fetches
 
   const updateProfile = useCallback(async (updates: Partial<Profile>) => {
     if (!address) {
@@ -76,6 +84,9 @@ export function useProfile() {
 
     try {
       const authHeaders = await getAuthHeaders();
+      
+      // Clear cache to ensure fresh data is fetched
+      profileCache.delete(address);
       
       // If profile doesn't exist yet, create it
       if (!profile?.wallet_address || profile.wallet_address !== address) {
@@ -116,6 +127,9 @@ export function useProfile() {
       const authHeaders = await getAuthHeaders();
       const { avatarUrl } = await profileService.uploadAvatar(file, authHeaders);
       
+      // Clear cache to ensure fresh data is fetched
+      profileCache.delete(address);
+      
       // Update profile with new avatar URL
       await updateProfile({ avatar_url: avatarUrl });
       
@@ -136,6 +150,22 @@ export function useProfile() {
       fetchProfile(address);
     }
   }, [address, fetchProfile]);
+
+  // Single useEffect to handle profile fetching
+  useEffect(() => {
+    console.log('🔍 [DEBUG] useProfile useEffect triggered with address:', address);
+    if (address) {
+      // Only clear cache on initial mount, not on every address change
+      const isInitialMount = !profileCache.has(address) && !profile;
+      if (isInitialMount) {
+        console.log('🔍 [DEBUG] Initial mount - clearing profile cache for address:', address);
+        profileCache.delete(address);
+      }
+      fetchProfile(address);
+    } else {
+      setProfile(null);
+    }
+  }, [address, fetchProfile, profile]);
 
   return {
     profile,

@@ -1,13 +1,20 @@
 import { PinataResponse } from '../types/index.ts'
 
-const PINATA_API_KEY = Deno.env.get('PINATA_API_KEY')!
-const PINATA_SECRET_KEY = Deno.env.get('PINATA_SECRET_KEY')!
+// const PINATA_API_KEY = Deno.env.get('PINATA_API_KEY')!
+// const PINATA_SECRET_KEY = Deno.env.get('PINATA_SECRET_KEY')!
 
 export async function pinFileToIPFS(
   file: File, 
   name?: string,
   retries = 3
 ): Promise<PinataResponse> {
+  const PINATA_API_KEY = Deno.env.get('PINATA_API_KEY')
+  const PINATA_SECRET_KEY = Deno.env.get('PINATA_SECRET_KEY')
+
+  if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
+    throw new Error('Missing Pinata configuration (PINATA_API_KEY or PINATA_SECRET_KEY)')
+  }
+
   for (let i = 0; i < retries; i++) {
     try {
       const formData = new FormData()
@@ -49,6 +56,13 @@ export async function pinJSONToIPFS(
   name?: string,
   retries = 3
 ): Promise<PinataResponse> {
+  const PINATA_API_KEY = Deno.env.get('PINATA_API_KEY')
+  const PINATA_SECRET_KEY = Deno.env.get('PINATA_SECRET_KEY')
+
+  if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
+    throw new Error('Missing Pinata configuration')
+  }
+
   for (let i = 0; i < retries; i++) {
     try {
       const response = await fetch('https://api.pinata.cloud/pinning/pinJSONToIPFS' as string, {
@@ -106,6 +120,11 @@ export async function getFileHash(file: File): Promise<string> {
 
 // Verify that a CID is pinned
 export async function verifyPin(cid: string): Promise<boolean> {
+  const PINATA_API_KEY = Deno.env.get('PINATA_API_KEY')
+  const PINATA_SECRET_KEY = Deno.env.get('PINATA_SECRET_KEY')
+
+  if (!PINATA_API_KEY || !PINATA_SECRET_KEY) return false
+
   try {
     const response = await fetch(
       `https://api.pinata.cloud/data/pinList?hashContains=${cid}`,
@@ -129,6 +148,13 @@ export async function verifyPin(cid: string): Promise<boolean> {
 
 // Unpin a file from IPFS (for cleanup)
 export async function unpinFromIPFS(cid: string): Promise<void> {
+  const PINATA_API_KEY = Deno.env.get('PINATA_API_KEY')
+  const PINATA_SECRET_KEY = Deno.env.get('PINATA_SECRET_KEY')
+
+  if (!PINATA_API_KEY || !PINATA_SECRET_KEY) {
+    throw new Error('Missing Pinata configuration')
+  }
+
   const response = await fetch(
     `https://api.pinata.cloud/pinning/unpin/${cid}`,
     {

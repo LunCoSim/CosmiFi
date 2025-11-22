@@ -25,9 +25,25 @@ export default function DesignerDashboard() {
   const router = useRouter();
   const { isDesigner, isCheckingDesigner } = useDesigner();
   const { collections, isLoadingCollections } = useCollection();
-  const { profile, isLoading: isLoadingProfile, error: profileError } = useProfile();
+  const { profile, isLoading: isLoadingProfile, error: profileError, updateProfile, uploadAvatar } = useProfile();
   const dispatch = useDispatch();
   const { isRegisterModalOpen, isEditProfileModalOpen } = useSelector((state: RootState) => state.ui);
+
+  // Convert Profile to DesignerProfile format for ProfileCard
+  const convertToDesignerProfile = (profile: any): any => {
+    if (!profile) return null;
+    
+    return {
+      username: profile.username || `Designer${profile.wallet_address?.slice(0, 6)}`,
+      bio: profile.bio || '',
+      email: profile.email,
+      website: profile.website,
+      avatarUrl: profile.avatar_url,
+      social_links: profile.social_links || {}
+    };
+  };
+
+  const designerProfile = convertToDesignerProfile(profile);
 
   useEffect(() => {
    
@@ -71,7 +87,7 @@ export default function DesignerDashboard() {
         {!!isDesigner && (
           <div>
             <ProfileCard
-              profile={profile}
+              profile={designerProfile}
               isLoading={isLoadingProfile}
               error={profileError}
               isDesigner={!!isDesigner}
@@ -139,11 +155,30 @@ export default function DesignerDashboard() {
         <EditProfileModal
           isOpen={isEditProfileModalOpen}
           onClose={() => dispatch(setEditProfileModalOpen(false))}
-          profile={profile}
-          onSave={(updatedProfile) => {
-            // TODO: Implement actual profile update logic
-            console.log('Updating profile:', updatedProfile);
-            // This would typically call an API to update the profile
+          profile={designerProfile}
+          onSave={async (updatedProfile) => {
+            console.log('Saving profile changes:', updatedProfile);
+            try {
+              await updateProfile(updatedProfile);
+              console.log('Profile updated successfully');
+              // Refresh the page or show success message if needed
+            } catch (error) {
+              console.error('Failed to update profile:', error);
+              alert('Failed to update profile. Please try again.');
+            }
+          }}
+          onUploadAvatar={async (file) => {
+            console.log('Uploading avatar file:', file.name);
+            try {
+              // Cast to any because uploadAvatar might return object with url or just string depending on implementation
+              // Based on useProfile.ts, it returns the avatarUrl string
+              const result = await uploadAvatar(file);
+              console.log('Avatar upload result:', result);
+              return result;
+            } catch (error) {
+              console.error('Failed to upload avatar:', error);
+              throw error;
+            }
           }}
         />
       )}

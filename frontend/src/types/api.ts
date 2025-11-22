@@ -95,7 +95,7 @@ export interface UpdateDesignRequest {
   tags?: string[];
   version?: string;
   license?: string;
-  status?: 'draft' | 'uploaded' | 'metadata_ready';
+  status?: 'draft' | 'uploaded' | 'metadata_ready' | 'minted';
 }
 
 export interface UpdateProfileRequest {

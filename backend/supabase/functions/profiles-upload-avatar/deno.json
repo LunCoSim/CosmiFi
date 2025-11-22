@@ -1,0 +1,26 @@
+{
+  "imports": {
+    "supabase": "https://esm.sh/@supabase/supabase-js@2",
+    "std/": "https://deno.land/std@0.208.0/"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"]
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["src/", "deno.jsonc"]
+    }
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-env index.ts"
+  },
+  "supabase": {
+    "verifyJwt": false
+  }
+}

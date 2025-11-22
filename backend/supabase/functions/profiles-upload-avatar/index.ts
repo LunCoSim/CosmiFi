@@ -10,25 +10,50 @@ const supabase = createClient(
 )
 
 serve(async (req: Request) => {
+  console.log('🔍 [DEBUG] Upload avatar request:', {
+    method: req.method,
+    url: req.url,
+    headers: Object.fromEntries(req.headers.entries()),
+  });
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
+    console.log('🔍 [DEBUG] Handling CORS preflight request');
     return new Response('ok', { headers: corsHeaders() })
   }
 
   // Handle authentication
+  console.log('🔍 [DEBUG] Checking authentication...');
+  
+  // Skip Supabase JWT verification for wallet signature auth
+  // We handle authentication manually in authMiddleware
   const authError = await authMiddleware(req)
-  if (authError) return authError
+  if (authError) {
+    console.log('🔍 [DEBUG] Authentication failed:', authError);
+    return authError
+  }
+  console.log('🔍 [DEBUG] Authentication successful');
 
   if (req.method !== 'POST') {
     return createErrorResponse('Method not allowed', 405)
   }
 
   try {
+    console.log('🔍 [DEBUG] Parsing form data...');
     const formData = await req.formData()
     const avatarFile = formData.get('avatar') as File
     const type = formData.get('type') as string || 'avatar' // 'avatar' or 'banner'
 
+    console.log('🔍 [DEBUG] Form data parsed:', {
+      hasAvatar: !!avatarFile,
+      avatarFileName: avatarFile?.name,
+      avatarSize: avatarFile?.size,
+      avatarType: avatarFile?.type,
+      type,
+    });
+
     if (!avatarFile) {
+      console.log('🔍 [DEBUG] No avatar file provided');
       return createErrorResponse('Avatar/banner file required')
     }
 
@@ -55,7 +80,7 @@ serve(async (req: Request) => {
       .update({ [updateField]: result.IpfsHash })
       .eq('wallet_address', walletAddress)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) throw error
 

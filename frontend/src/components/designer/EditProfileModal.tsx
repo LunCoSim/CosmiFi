@@ -21,11 +21,13 @@ interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   profile: DesignerProfile | null;
-  onSave: (profile: Partial<DesignerProfile>) => void;
+  onSave: (profile: Partial<DesignerProfile>) => Promise<void>;
+  onUploadAvatar: (file: File) => Promise<string>;
 }
 
-export function EditProfileModal({ isOpen, onClose, profile, onSave }: EditProfileModalProps) {
+export function EditProfileModal({ isOpen, onClose, profile, onSave, onUploadAvatar }: EditProfileModalProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
   const {
     register,
@@ -37,47 +39,58 @@ export function EditProfileModal({ isOpen, onClose, profile, onSave }: EditProfi
   } = useForm<EditProfileForm>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: {
-      username: '',
-      bio: '',
-      twitter: '',
-      farcaster: '',
-      gmail: '',
-      avatarUrl: '',
+      username: profile?.username || '',
+      bio: profile?.bio || '',
+      twitter: profile?.social_links?.twitter || '',
+      farcaster: profile?.social_links?.farcaster || '',
+      gmail: profile?.social_links?.gmail || '',
+      avatarUrl: profile?.avatarUrl || '',
     },
   });
 
   const avatarUrl = watch('avatarUrl');
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Create a temporary URL for preview
+    const tempUrl = URL.createObjectURL(file);
+    setSelectedFile(file);
+    setValue('avatarUrl', tempUrl);
+  };
+
+  const onSubmit = async (data: EditProfileForm) => {
     setIsUploading(true);
     try {
-      // TODO: Implement actual image upload to IPFS or storage service
-      // For now, create a temporary URL
-      const tempUrl = URL.createObjectURL(file);
-      setValue('avatarUrl', tempUrl);
+      let finalAvatarUrl = data.avatarUrl;
+
+      // If a new file was selected, upload it first
+      if (selectedFile) {
+        console.log('Uploading avatar...', selectedFile.name);
+        finalAvatarUrl = await onUploadAvatar(selectedFile);
+        console.log('Avatar uploaded successfully:', finalAvatarUrl);
+      }
+
+      const updatedProfile: Partial<DesignerProfile> = {
+        username: data.username,
+        bio: data.bio,
+        avatarUrl: finalAvatarUrl,
+        social_links: {
+          twitter: data.twitter,
+          farcaster: data.farcaster,
+          gmail: data.gmail,
+        },
+      };
+      
+      await onSave(updatedProfile);
+      onClose();
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error saving profile:', error);
+      alert('Failed to save profile. Please try again.');
     } finally {
       setIsUploading(false);
     }
-  };
-
-  const onSubmit = (data: EditProfileForm) => {
-    const updatedProfile: Partial<DesignerProfile> = {
-      username: data.username,
-      bio: data.bio,
-      avatarUrl: data.avatarUrl,
-      social_links: {
-        twitter: data.twitter,
-        farcaster: data.farcaster,
-        gmail: data.gmail,
-      },
-    };
-    onSave(updatedProfile);
-    onClose();
   };
 
   return (

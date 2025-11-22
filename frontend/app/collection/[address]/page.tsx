@@ -96,8 +96,8 @@ export default function CollectionDetail() {
   }, [name, symbol, designer, totalSupply]);
 
   useEffect(() => {
-    console.log('Collection detail page loaded');
-    console.log('Collection address:', collectionAddress);
+    console.log('=== COLLECTION [ADDRESS] ROUTE LOADED ===');
+    console.log('Collection address (blockchain):', collectionAddress);
     console.log('Wallet connected:', !!address);
     console.log('Wallet address:', address);
     console.log('CONTRACTS:', CONTRACTS);
@@ -108,6 +108,8 @@ export default function CollectionDetail() {
     console.log('NFT ABI:', CONTRACTS.BLUEPRINT_NFT?.abi);
     console.log('Is collection address valid:', !!collectionAddress);
     console.log('Is factory address valid:', !!CONTRACTS.BLUEPRINT_FACTORY?.address);
+    console.log('This route uses blockchain addresses and real contract data');
+    console.log('This conflicts with the [id] route which uses mock data');
   }, [collectionAddress, address]);
 
   // Add logging to track wallet state during navigation

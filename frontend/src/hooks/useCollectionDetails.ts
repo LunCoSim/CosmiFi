@@ -12,15 +12,8 @@ interface Collection {
 }
 
 export function useCollectionDetails(collectionAddresses: Address[] | undefined) {
-  // Debug logging
-  console.log('useCollectionDetails - CONTRACTS.BLUEPRINT_FACTORY:', CONTRACTS.BLUEPRINT_FACTORY);
-  console.log('useCollectionDetails - collectionAddresses:', collectionAddresses);
-  
   // Get the first address or undefined - this ensures hooks are always called with consistent parameters
   const firstAddress = collectionAddresses && collectionAddresses.length > 0 ? collectionAddresses[0] : undefined;
-  
-  console.log('useCollectionDetails - firstAddress:', firstAddress);
-  console.log('useCollectionDetails - contract address:', CONTRACTS.BLUEPRINT_FACTORY?.address);
   
   // Get designer from factory contract - always call hook with consistent parameters
   const { data: designer, isLoading: isLoadingDesigner, error: designerError } = useReadContract({
@@ -70,49 +63,35 @@ export function useCollectionDetails(collectionAddresses: Address[] | undefined)
   const isLoading = isLoadingDesigner || isLoadingName || isLoadingSymbol || isLoadingSupply;
   const error = designerError || nameError || symbolError || supplyError;
 
-  // Debug logging for the hook result
+  // Log errors only for debugging
   useEffect(() => {
-    console.log('useCollectionDetails - hook result:', {
-      designer,
-      name,
-      symbol,
-      totalSupply,
-      isLoading,
-      error: error?.message,
-      firstAddress,
-      contractAddress: CONTRACTS.BLUEPRINT_FACTORY?.address
-    });
+    if (error) {
+      console.error('useCollectionDetails - error:', error?.message);
+    }
   }, [designer, name, symbol, totalSupply, isLoading, error, firstAddress]);
 
   // Memoize the result to prevent unnecessary re-renders
   const collections = useMemo(() => {
     // Early return if no addresses or contract config is not ready
     if (!collectionAddresses || collectionAddresses.length === 0 || !firstAddress) {
-      console.log('useCollectionDetails - useMemo: no collection addresses');
       return [];
     }
     
     if (!CONTRACTS.BLUEPRINT_FACTORY?.address) {
-      console.log('useCollectionDetails - useMemo: no contract address');
       return [];
     }
-    
-    console.log('useCollectionDetails - useMemo - processing addresses:', collectionAddresses.length);
     
     // For now, only process the first collection due to React hooks limitations
     // This is a temporary fix to resolve the immediate error
     if (isLoading) {
-      console.log('useCollectionDetails - useMemo: still loading');
       return [];
     }
     
     if (error) {
-      console.log('useCollectionDetails - useMemo: error occurred:', error.message);
       return [];
     }
     
     if (!designer || !name || !symbol) {
-      console.log('useCollectionDetails - useMemo: missing data', { designer, name, symbol });
       // Return a collection with fallback data
       const result = [{
         address: firstAddress,
@@ -122,7 +101,6 @@ export function useCollectionDetails(collectionAddresses: Address[] | undefined)
         totalSupply: totalSupply ? Number(totalSupply) : 0,
       }];
       
-      console.log('useCollectionDetails - useMemo: returning collection with fallbacks:', result);
       return result;
     }
 
@@ -134,7 +112,6 @@ export function useCollectionDetails(collectionAddresses: Address[] | undefined)
       totalSupply: totalSupply ? Number(totalSupply) : 0,
     }];
     
-    console.log('useCollectionDetails - useMemo - final collections:', result.length);
     return result;
   }, [collectionAddresses, firstAddress, designer, name, symbol, totalSupply, isLoading, error]);
 

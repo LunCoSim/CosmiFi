@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
+import {
   UserIcon,
   SparklesIcon,
   EyeIcon,
@@ -15,6 +15,7 @@ import {
   LinkIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '../../../src/components/ui/Button';
+import { usePublicProfile } from '../../../src/hooks/usePublicProfile';
 
 // Mock data for demonstration
 const mockDesignerData = {
@@ -138,16 +139,19 @@ export default function DesignerProfilePage() {
   const address = params.address as string;
   const [activeTab, setActiveTab] = useState<'collections' | 'nfts'>('collections');
   const [isFollowing, setIsFollowing] = useState(false);
+  
+  // Use public profile hook - no authentication required
+  const { profile, isLoading, error, refetch } = usePublicProfile(address);
 
   // Mock data - in real app, this would come from API
-  const designer = mockDesignerData[address as keyof typeof mockDesignerData] || {
-    name: "Unknown Designer",
-    address: address,
-    bio: "No bio available",
-    avatar: "/api/placeholder/200/200",
+  const designer = profile ? {
+    name: profile.username || "Unknown Designer",
+    address: profile.wallet_address || address,
+    bio: profile.bio || "No bio available",
+    avatar: profile.avatar_url || "/api/placeholder/200/200",
     coverImage: "/api/placeholder/1200/400",
     location: "Unknown",
-    website: "",
+    website: profile.website || "",
     joinedDate: "Unknown",
     totalDesigns: 0,
     totalViews: 0,
@@ -163,6 +167,34 @@ export default function DesignerProfilePage() {
   const handleFollow = () => {
     setIsFollowing(!isFollowing);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Profile</h2>
+          <p className="text-gray-600 mb-4">Fetching designer information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <UserIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Profile</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={() => refetch()} className="mb-4">Try Again</Button>
+          <Link href="/collection">
+            <Button>Browse Collections</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!designer) {
     return (
