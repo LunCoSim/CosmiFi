@@ -1,6 +1,6 @@
-import { createPublicClient, createWalletClient, http } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
-import { baseSepolia } from 'viem/chains'
+import { createPublicClient, createWalletClient, http } from 'https://esm.sh/viem@2.21.54'
+import { privateKeyToAccount } from 'https://esm.sh/viem@2.21.54/accounts'
+import { baseSepolia } from 'https://esm.sh/viem@2.21.54/chains'
 import DesignerRegistryABI from '../abi/DesignerRegistry.json' with { type: "json" }
 import BlueprintNFTABI from '../abi/BlueprintNFT.json' with { type: "json" }
 import BlueprintNFTFactoryABI from '../abi/BlueprintNFTFactory.json' with { type: "json" }
@@ -164,7 +164,7 @@ export async function getTotalSupply(collectionAddress: string): Promise<number>
 }
 
 // Signature verification using viem
-import { verifyMessage, recoverAddress, hashMessage } from 'viem'
+import { verifyMessage, recoverAddress, hashMessage } from 'https://esm.sh/viem@2.21.54'
 
 export async function verifySignature(
   message: string,

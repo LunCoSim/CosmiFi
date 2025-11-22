@@ -1,8 +1,8 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0'
-import { NFTMintedWebhook, ApiResponse } from '../../_shared/types/index.ts'
-import { createSuccessResponse, createErrorResponse, corsHeaders } from '../../_shared/middleware/auth.ts'
-import { getDesignData, getCollectionDesigner } from '../../_shared/utils/contracts.ts'
+import { NFTMintedWebhook, ApiResponse } from '../_shared/types/index.ts'
+import { createSuccessResponse, createErrorResponse, corsHeaders } from '../_shared/middleware/auth.ts'
+import { getDesignData, getCollectionDesigner } from '../_shared/utils/contracts.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,

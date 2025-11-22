@@ -234,12 +234,12 @@ export default function DesignerProfilePage() {
                 
                 {/* Meta Info */}
                 <div className="flex flex-wrap justify-center sm:justify-start gap-6 text-sm text-gray-600 mb-6">
-                  {designer.location && (
+                  {/* {designer.location && (
                     <div className="flex items-center bg-blue-50 px-3 py-2 rounded-lg">
                       <MapPinIcon className="h-5 w-5 mr-2 text-blue-600" />
                       <span className="font-medium">{designer.location}</span>
                     </div>
-                  )}
+                  )} */}
                   {designer.website && (
                     <div className="flex items-center bg-purple-50 px-3 py-2 rounded-lg">
                       <LinkIcon className="h-5 w-5 mr-2 text-purple-600" />

@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts"
-import { pinJSONToIPFS } from '../../_shared/utils/ipfs.ts'
-import { authMiddleware, createSuccessResponse, createErrorResponse, corsHeaders } from '../../_shared/middleware/auth.ts'
-import { MetadataRequest, MetadataResponse, NFTMetadata, ApiResponse, AuthenticatedRequest } from '../../_shared/types/index.ts'
+import { pinJSONToIPFS } from '../_shared/utils/ipfs.ts'
+import { authMiddleware, createSuccessResponse, createErrorResponse, corsHeaders } from '../_shared/middleware/auth.ts'
+import { MetadataRequest, MetadataResponse, NFTMetadata, ApiResponse, AuthenticatedRequest } from '../_shared/types/index.ts'
 
 serve(async (req: Request) => {
   // Handle CORS preflight
